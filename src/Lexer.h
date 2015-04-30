@@ -12,25 +12,6 @@
 #include <sstream>
 
 
-class ParseError : public std::logic_error {
-  using std::logic_error::logic_error;
-  ParseError() = delete;
-};
-
-class UnexpectedTokenException : public ParseError {
-public:
-  UnexpectedTokenException(Token token, std::string lex, Token expected) : ParseError(
-    "Unexpected token: " +
-    std::to_string(token) +
-    " (\"" + lex + "\"). Expected: " + std::to_string(expected)
-  ) {};
-
-};
-
-class LexexError : public ParseError {
-  using ParseError::ParseError;
-};
-
 
 
 
@@ -43,6 +24,7 @@ public:
     if (istream.fail()) {
       throw std::runtime_error("failed to use stream");
     }
+    NextToken();
   }
 
   Token NextToken() {
@@ -80,12 +62,6 @@ public:
     return current_lex_;
   }
 
-  Token Consume(Token token) {
-    if(NextToken() != token) {
-      throw UnexpectedTokenException(current_token(), current_lex(), token);
-    }
-    return current_token();
-  }
 
 
 
@@ -138,7 +114,7 @@ private:
       add_or = true;
       regex_sstream << token_str_pair.second;
     }
-    std::cout << regex_sstream.str() << std::endl; // TODO
+//    std::cout << regex_sstream.str() << std::endl;
     return std::regex(regex_sstream.str());
   }
 

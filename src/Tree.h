@@ -15,25 +15,70 @@ public:
 
   typedef std::unique_ptr<Tree> Child;
 
-  Tree(Token token) : token_(token) { };
+  Tree(Token token) : lex_(std::to_string(token)) { };
 
-  Tree(Token token, std::string lex) : token_(token), lex_(std::move(lex)) {
+  Tree(const std::string & lex) : lex_(lex) {
+  }
+
+  Tree(Token token, const std::string & lex) : Tree(token) {
+    lex_ += ": ";
+    lex_ += lex;
   };
 
   template<typename ... Children>
-  Tree(Token token, Child&& ch, Children&& ...  children) : token_(token) {
+  Tree(Token token, Child&& ch, Children&& ...  children) : Tree(token) {
     AddChildren(std::forward<Child>(ch), std::forward<Children>(children)...);
   };
 
   template<typename ... Children>
-  Tree(Token token, Tree* ch, Children&& ...  children) : token_(token) {
+  Tree(Token token, Tree* ch, Children&& ...  children) : Tree(token) {
     AddChildren(ch, std::forward<Children>(children)...);
   };
+
+  template<typename ... Children>
+  Tree(std::string token, Child&& ch, Children&& ...  children) : Tree(token) {
+    AddChildren(std::forward<Child>(ch), std::forward<Children>(children)...);
+  };
+
+  template<typename ... Children>
+  Tree(std::string token, Tree* ch, Children&& ...  children) : Tree(token) {
+    AddChildren(ch, std::forward<Children>(children)...);
+  };
+
 
   Tree(const Tree&) = default;
 
   Tree(Tree&&) = default;
 
+  bool operator==(const Tree & other) const {
+    if (lex_ != other.lex_)  {
+      return false;
+    }
+    if(children_.size() != other.children_.size()) {
+      return false;
+    }
+
+    for(auto it1 = children_.begin(), it2 = other.children_.begin(), end1 = children_.end();
+        it1 != end1;
+        ++it1, ++it2
+        ){
+      if(*(*it1) != *(*it2)) {
+        return false;
+      }
+    }
+    return true;
+
+  }
+
+
+  bool operator!=(const Tree & other) const {
+    return !(*this == other);
+  }
+
+  template<typename ... Args>
+  void EmplaceChild(Args && ... args) {
+    children_.emplace_back(std::make_unique<Tree>(std::forward<Args>(args)...));
+  }
 
   void AddChild(Child&& child) {
     children_.emplace_back(std::forward<Child>(child));
@@ -51,7 +96,7 @@ public:
 
 
 private:
-  Token token_;
+//  Token token_;
   std::string lex_;
   std::vector<Child> children_;
 
@@ -62,10 +107,11 @@ private:
     line_prefix.append(depth * 2, ' ');
 
     os << line_prefix;
-    os << "<" << std::to_string(token_);
-    if (!lex_.empty()) {
-      os << ": " << lex_;
-    }
+//    os << "<" << std::to_string(token_);
+//    if (!lex_.empty()) {
+//      os << ": " << lex_;
+//    }
+    os << "<" << lex_;
     for (const auto & ch : children_) {
       os << '\n';
       ch->PrintToStream(os, depth + 1);

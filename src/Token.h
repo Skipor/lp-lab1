@@ -10,7 +10,7 @@
 #include <cstdlib>
 
 
-enum class Token {
+enum class Token : int{
   UNDEFINED = 0,
   VAR,
   NAME,
