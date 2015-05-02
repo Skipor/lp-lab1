@@ -76,32 +76,47 @@ TEST(CorrectParceTest, NnNruleTest) { // N->n,N ; L->P rules test
 
 }
 //
-//TEST(CorrectParceTest, LPLruleTest) { // L -> PL
-//  cout << *Parser::Parse("var a , b : integer; c , d : real;") << endl;
-//
-//  ASSERT_EQ(*Parser::Parse("var a , b : integer; c , d : real;"),
-//            *Parser::Node(
-//                new Tree("S",
-//                         new Tree(Token::VAR),
-//                         new Tree("L",
-//                                  new Tree("P",
-//                                           new Tree("N",
-//                                                    new Tree(Token::NAME, "a"),
-//                                                    new Tree(Token::COMMA),
-//                                                    new Tree("N",
-//                                                             new Tree(Token::NAME, "b")
-//                                                    )
-//
-//                                           ),
-//                                           new Tree(Token::COLON),
-//                                           new Tree(Token::TYPE, "integer"),
-//                                           new Tree(Token::SEMICOLON)
-//                                  )
-//
-//                         )
-//                )
-//            )
-//
-//  );
-//}
+TEST(CorrectParceTest, LPLruleTest) { // L -> PL
+  cout << *Parser::Parse("var a , b : integer; c , d : real;") << endl;
+
+  ASSERT_EQ(*Parser::Parse("var a , b : integer; c , d : real;"),
+            *Parser::Node(
+                new Tree("S",
+                         new Tree(Token::VAR),
+                         new Tree("L",
+                                  new Tree("P",
+                                           new Tree("N",
+                                                    new Tree(Token::NAME, "a"),
+                                                    new Tree(Token::COMMA),
+                                                    new Tree("N",
+                                                             new Tree(Token::NAME, "b")
+                                                    )
+
+                                           ),
+                                           new Tree(Token::COLON),
+                                           new Tree(Token::TYPE, "integer"),
+                                           new Tree(Token::SEMICOLON)
+                                  ),
+                                  new Tree("L",
+                                           new Tree("P",
+                                                    new Tree("N",
+                                                             new Tree(Token::NAME, "c"),
+                                                             new Tree(Token::COMMA),
+                                                             new Tree("N",
+                                                                      new Tree(Token::NAME, "d")
+                                                             )
+
+                                                    ),
+                                                    new Tree(Token::COLON),
+                                                    new Tree(Token::TYPE, "real"),
+                                                    new Tree(Token::SEMICOLON)
+                                           )
+                                  )
+
+                         )
+                )
+            )
+
+  );
+}
 
